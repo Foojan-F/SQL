@@ -36,3 +36,43 @@ FROM ProductOrderCount
 CROSS JOIN  AVGOrderNumber 
 WHERE NumberOfOrders>AVGNUMBEROFORDER;
 ```
+
+List customers whose order total is greater than the total of a specific product's orders.
+```sql
+-- Calculate the total revenue of a specific product
+WITH ProductTotal AS (
+    SELECT 
+        ProductId,
+        SUM(TotalPrice) AS TotalProductRevenue
+    FROM 
+        OrderLines
+    WHERE 
+        ProductId = 11075
+    GROUP BY 
+        ProductId
+    
+),
+
+-- Calculate the total order value for each customer
+CustomerTotals AS (
+    SELECT 
+        O.CustomerId,
+        SUM(OL.TotalPrice) AS TotalCustomerOrders
+    FROM 
+        Orders O
+    JOIN 
+        OrderLines OL ON O.OrderId = OL.OrderId
+    GROUP BY 
+        O.CustomerId
+)
+
+-- Compare customer total with product total
+SELECT 
+    CT.CustomerId,
+    CT.TotalCustomerOrders
+FROM 
+    CustomerTotals CT
+JOIN 
+    ProductTotal PT ON CT.TotalCustomerOrders > PT.TotalProductRevenue;
+```
+
