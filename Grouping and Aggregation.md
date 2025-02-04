@@ -69,3 +69,11 @@ FROM ZipCensus
 GROUP BY state
 ORDER BY state;
 ```
+Retrieve products that were ordered by customers in multiple states.
+```sql
+SELECT  OrderLines.ProductId
+FROM Orders
+JOIN OrderLines ON OrderLines.OrderId = Orders.OrderId
+GROUP BY OrderLines.ProductId
+HAVING COUNT(DISTINCT Orders.State) > 1;
+```
