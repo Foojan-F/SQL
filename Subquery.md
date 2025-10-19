@@ -10,3 +10,15 @@ WHERE O.CustomerId IN (
     HAVING COUNT(OrderId) > 5
 );
 ```
+the list of all zip codes in states with fewer than 100 zip codes
+``sql
+SELECT zc1.zcta5
+FROM ZipCensus zc1
+WHERE EXISTS (
+    SELECT 1
+    FROM ZipCensus zc2
+    WHERE zc2.state = zc1.state
+    GROUP BY zc2.state
+    HAVING COUNT(*) < 100
+);
+```
